@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>78 RPM Jukebox</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="content">
+            <div id="record-title"></div>
+            <div id="record-container"></div>
+            <p class="instruction">Enter an Internet Archive 78 RPM record identifier or paste a full URL:</p>
+            <div class="search-container">
+                <input type="text" id="identifier" placeholder="e.g., 78_i-want-a-man-who-comes-to-work-on-time_laura-duncan-al-moss_gbia0423177b">
+                <button onclick="loadRecord()">Load Record</button>
+            </div>
+            <div id="debug-section" style="display: none;">
+                <details>
+                    <summary>Debug Information</summary>
+                    <div class="debug-content">
+                        <h3>Original Image</h3>
+                        <img id="originalImage" alt="Original Image">
+                        <div id="analysis-results"></div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+    <script src="/app.js"></script>
+</body>
+</html>
