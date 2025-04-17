@@ -39,6 +39,7 @@ h1 {
     text-transform: uppercase;
     letter-spacing: 0.3rem;
     font-size: 36pt;
+    transition: color 1s ease;
 }
 
 .instruction {

@@ -60,7 +60,7 @@ async function analyzeImage(imageElement) {
         if (circles.cols > 0) {
             labelDetected = true;
             const maxCircle = findLargestCircle(circles);
-            const outputCanvas = createOutputCanvas();
+            createOutputCanvas();
             const processedImage = processCircle(cv, src, maxCircle, scaleFactor);
 
             updateUI(processedImage, imageElement, maxCircle, scaleFactor);
@@ -74,6 +74,8 @@ async function analyzeImage(imageElement) {
         console.error('Error analyzing image:', error);
         labelDetected = false;
         showNoCirclesDetected();
+        const recordImg = document.getElementById('album-art');
+        recordImg.onload = () => setBackgroundColor(recordImg);
     }
 
     document.getElementById('debug-section').style.display = 'block';
@@ -200,9 +202,7 @@ function processCircle(cv, src, maxCircle, scaleFactor) {
 function updateUI(processedImage, originalImage, maxCircle, scaleFactor) {
     const recordImg = document.getElementById('album-art');
     recordImg.src = processedImage.canvas.toDataURL();
-    if (labelDetected) {
-        recordImg.onload = () => setBackgroundColor(recordImg);
-    }
+    recordImg.onload = () => setBackgroundColor(recordImg);
 
     // Create a canvas to draw the circle on the original image
     const debugCanvas = document.createElement('canvas');
@@ -256,12 +256,7 @@ function showNoCirclesDetected() {
     const placeholderCanvas = createPlaceholderLabel(recordTitle);
     const recordImg = document.getElementById('album-art');
     recordImg.src = placeholderCanvas.toDataURL();
-
-    // Set colors directly since we know them
-    const backgroundColor = '#1a4731';
-    const textColor = '#ffffff';
-    document.body.style.backgroundColor = backgroundColor;
-    document.querySelector('h1').style.color = textColor;
+    recordImg.onload = () => setBackgroundColor(recordImg);
 }
 
 function createPlaceholderLabel(title) {
@@ -402,17 +397,25 @@ function findContrastColor(color) {
 }
 
 function setBackgroundColor(imageElement) {
-    try {
-        const color = colorThief.getColor(imageElement);
-        document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+    let color = [26, 71, 49]; // dark green, #1a4731
+    let fgColor = [255, 255, 255]; // white
 
-        const fgColor = findContrastColor(color);
+    if (labelDetected) {
+        try {
+            color = colorThief.getColor(imageElement);
+            fgColor = findContrastColor(color);
+        } catch (error) {
+            console.error('Error setting colors:', error);
+        }
+    }
+
+    // Batch the color changes to happen in the same frame
+    requestAnimationFrame(() => {
+        document.body.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         document.querySelector(
             'h1'
         ).style.color = `rgb(${fgColor[0]}, ${fgColor[1]}, ${fgColor[2]})`;
-    } catch (error) {
-        console.error('Error setting colors:', error);
-    }
+    });
 }
 
 // ===== Main Record Loading Functions =====
@@ -459,7 +462,7 @@ async function fetchRecordData(identifier) {
 }
 
 function setupRecordDisplay(data) {
-    document.title = `${data.title} - 78 RPM Jukebox`;
+    document.title = `78 RPM Jukebox - ${data.title}`;
     document.querySelector('#record-title').innerHTML = `<h1>${data.title}</h1>`;
 
     const recordElement = document.createElement('div');
