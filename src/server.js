@@ -52,14 +52,14 @@ async function getArchiveInfo(identifier) {
     }
 }
 
-// API endpoint
+// API endpoint for fetching record data
 app.get('/api/record/:identifier', async (req, res) => {
     try {
-        const archiveInfo = await getArchiveInfo(req.params.identifier);
-        res.json(archiveInfo);
+        const data = await getArchiveInfo(req.params.identifier);
+        res.json(data);
     } catch (error) {
-        console.error('Error handling request:', error);
-        res.status(500).json({ error: 'Error processing Internet Archive request' });
+        console.error('Error in /api/record endpoint:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
